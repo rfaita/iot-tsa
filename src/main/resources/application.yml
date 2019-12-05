@@ -9,15 +9,14 @@ spring:
     stream:
       bindings:
         input:
-          destination: amq.topic
+          destination: iot.edge.topic
           binder: rabbit
-          group: sensor-consumer-group
+          group: timeseries-sensor-consumer-group
       rabbit:
         bindings:
           input:
             consumer:
               queueNameGroupOnly: true
-              bindingRoutingKey: ".sensor"
   rabbitmq:
     host: localhost
     password: admin

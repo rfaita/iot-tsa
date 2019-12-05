@@ -1,4 +1,4 @@
-package com.iot.edge.config;
+package com.iot.tsp.config;
 
 import org.influxdb.dto.Point;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

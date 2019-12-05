@@ -1,4 +1,4 @@
-package com.iot.edge.config;
+package com.iot.tsp.config;
 
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
