@@ -19,5 +19,21 @@ spring:
               queueNameGroupOnly: true
   rabbitmq:
     host: localhost
-    password: admin
-    username: admin
+    port: 5672
+    password: guest
+    username: guest
+
+
+---
+spring:
+  profiles: docker-compose
+  influxdb:
+    url: http://influxdb:8086
+    username: user
+    password: user
+    database: test
+    retention-policy: autogen
+  rabbitmq:
+    host: rabbitmq
+    password: guest
+    username: guest
