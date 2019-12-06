@@ -1,4 +1,4 @@
-package com.iot.tsp.command;
+package com.iot.tsa.command;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.influxdb.InfluxDBTemplate;

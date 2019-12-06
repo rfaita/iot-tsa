@@ -5,23 +5,6 @@ spring:
     password: user
     database: test
     retention-policy: autogen
-  cloud:
-    stream:
-      bindings:
-        input:
-          destination: iot.edge.topic
-          binder: rabbit
-          group: timeseries-sensor-consumer-group
-      rabbit:
-        bindings:
-          input:
-            consumer:
-              queueNameGroupOnly: true
-  rabbitmq:
-    host: localhost
-    port: 5672
-    password: guest
-    username: guest
 
 
 ---
@@ -33,7 +16,3 @@ spring:
     password: user
     database: test
     retention-policy: autogen
-  rabbitmq:
-    host: rabbitmq
-    password: guest
-    username: guest

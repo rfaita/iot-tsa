@@ -1,4 +1,4 @@
-package com.iot.tsp.config;
+package com.iot.tsa.config;
 
 import org.influxdb.dto.Point;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
