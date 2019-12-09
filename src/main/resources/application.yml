@@ -5,7 +5,12 @@ spring:
     password: user
     database: test
     retention-policy: autogen
-
+    gzip: true
+server:
+  port: 9090
+  compression:
+    enabled: true
+    min-reponse-size: 1025
 
 ---
 spring:
@@ -16,3 +21,4 @@ spring:
     password: user
     database: test
     retention-policy: autogen
+    gzip: true

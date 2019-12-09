@@ -3,6 +3,7 @@ package com.iot.tsa.model;
 import com.iot.tsa.enums.TimeUnit;
 import org.influxdb.dto.BoundParameterQuery;
 import org.influxdb.dto.Query;
+import org.influxdb.querybuilder.Appendable;
 import org.influxdb.querybuilder.SelectQueryImpl;
 import org.influxdb.querybuilder.SelectionQueryImpl;
 import org.influxdb.querybuilder.WhereQueryImpl;
@@ -17,22 +18,22 @@ public class QueryCriteria {
     private final String database;
     private final String id;
     private final String tenantId;
-    private final String initialTime;
-    private final String finalTime;
+    private final String from;
+    private final String to;
     private final String[] selectCriteria;
-    private final Long timeGroupByCriteria;
-    private final TimeUnit timeGroupByUnit;
+    private final Long intervalValue;
+    private final TimeUnit intervalUnit;
 
     private QueryCriteria(Builder builder) {
         this.table = builder.table;
         this.database = builder.database;
         this.id = builder.id;
         this.tenantId = builder.tenantId;
-        this.initialTime = builder.initialTime;
-        this.finalTime = builder.finalTime;
+        this.from = builder.from;
+        this.to = builder.to;
         this.selectCriteria = builder.selectCriteria;
-        this.timeGroupByCriteria = builder.timeGroupByCriteria;
-        this.timeGroupByUnit = builder.timeGroupByUnit;
+        this.intervalValue = builder.intervalValue;
+        this.intervalUnit = builder.intervalUnit;
     }
 
     public Query toQuery() {
@@ -52,16 +53,24 @@ public class QueryCriteria {
 
 
 
-        if (!StringUtils.isEmpty(this.initialTime)) {
-            query = query.and(gte("time", this.initialTime));
+        if (!StringUtils.isEmpty(this.from)) {
+            if (Now.isRelativeTime(this.from)) {
+                query = query.and(gte("time", new Now(this.from)));
+            }else {
+                query = query.and(gte("time", this.from));
+            }
         }
-        if (!StringUtils.isEmpty(this.finalTime)) {
-            query = query.and(lte("time", this.finalTime));
+        if (!StringUtils.isEmpty(this.to)) {
+            if (Now.isRelativeTime(this.to)) {
+                query = query.and(lte("time", new Now(this.to)));
+            }else {
+                query = query.and(lte("time", this.to));
+            }
         }
 
         SelectQueryImpl selectQuery = null;
-        if (!ObjectUtils.isEmpty(this.timeGroupByCriteria) && !ObjectUtils.isEmpty(this.timeGroupByUnit)) {
-            selectQuery = query.groupBy(time(this.timeGroupByCriteria, this.timeGroupByUnit.getUnit()));
+        if (!ObjectUtils.isEmpty(this.intervalValue) && !ObjectUtils.isEmpty(this.intervalUnit)) {
+            selectQuery = query.groupBy(time(this.intervalValue, this.intervalUnit.getUnit()));
         }
 
         return BoundParameterQuery.QueryBuilder
@@ -79,24 +88,24 @@ public class QueryCriteria {
         return tenantId;
     }
 
-    public String getInitialTime() {
-        return initialTime;
+    public String getFrom() {
+        return from;
     }
 
-    public String getFinalTime() {
-        return finalTime;
+    public String getTo() {
+        return to;
     }
 
     public String[] getSelectCriteria() {
         return selectCriteria;
     }
 
-    public Long getTimeGroupByCriteria() {
-        return timeGroupByCriteria;
+    public Long getIntervalValue() {
+        return intervalValue;
     }
 
-    public TimeUnit getTimeGroupByUnit() {
-        return timeGroupByUnit;
+    public TimeUnit getIntervalUnit() {
+        return intervalUnit;
     }
 
     public static class Builder {
@@ -104,11 +113,11 @@ public class QueryCriteria {
         private String database;
         private String id;
         private String tenantId;
-        private String initialTime;
-        private String finalTime;
+        private String from;
+        private String to;
         private String[] selectCriteria;
-        private Long timeGroupByCriteria;
-        private TimeUnit timeGroupByUnit;
+        private Long intervalValue;
+        private TimeUnit intervalUnit;
 
         public Builder table(String table) {
             this.table = table;
@@ -130,13 +139,13 @@ public class QueryCriteria {
             return this;
         }
 
-        public Builder initialTime(String initialTime) {
-            this.initialTime = initialTime;
+        public Builder from(String from) {
+            this.from = from;
             return this;
         }
 
-        public Builder finalTime(String finalTime) {
-            this.finalTime = finalTime;
+        public Builder to(String to) {
+            this.to = to;
             return this;
         }
 
@@ -145,13 +154,13 @@ public class QueryCriteria {
             return this;
         }
 
-        public Builder timeGroupByCriteria(Long timeGroupByCriteria) {
-            this.timeGroupByCriteria = timeGroupByCriteria;
+        public Builder intervalValue(Long intervalValue) {
+            this.intervalValue = intervalValue;
             return this;
         }
 
-        public Builder timeGroupByUnit(TimeUnit timeGroupByUnit) {
-            this.timeGroupByUnit = timeGroupByUnit;
+        public Builder intervalUnit(TimeUnit intervalUnit) {
+            this.intervalUnit = intervalUnit;
             return this;
         }
 

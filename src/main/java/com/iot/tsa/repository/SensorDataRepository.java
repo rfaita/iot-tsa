@@ -3,18 +3,13 @@ package com.iot.tsa.repository;
 import com.iot.tsa.model.SensorData;
 import com.iot.tsa.model.QueryCriteria;
 import com.iot.tsa.util.CustomInfluxDBResultMapper;
-import org.influxdb.dto.BoundParameterQuery;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.springframework.data.influxdb.InfluxDBTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.List;
-
-import static com.iot.tsa.util.TimeFormatter.toZulu;
-import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.*;
 
 @Repository
 public class SensorDataRepository {
@@ -50,10 +45,10 @@ public class SensorDataRepository {
                 .id(criteria.getId())
                 .tenantId(criteria.getTenantId())
                 .selectCriteria(criteria.getSelectCriteria())
-                .timeGroupByCriteria(criteria.getTimeGroupByCriteria())
-                .finalTime(criteria.getFinalTime())
-                .initialTime(criteria.getInitialTime())
-                .timeGroupByUnit(criteria.getTimeGroupByUnit())
+                .intervalValue(criteria.getIntervalValue())
+                .to(criteria.getTo())
+                .from(criteria.getFrom())
+                .intervalUnit(criteria.getIntervalUnit())
                 .build();
         return query(newCriteria.toQuery());
     }

@@ -5,13 +5,15 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.iot.tsa.util.UnmappedFields;
 import org.influxdb.annotation.Column;
 import org.influxdb.annotation.Measurement;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Measurement(name = "sensorData")
-public class SensorData {
+public class SensorData extends RepresentationModel {
 
     @Column( name = "time")
     private Instant time;
