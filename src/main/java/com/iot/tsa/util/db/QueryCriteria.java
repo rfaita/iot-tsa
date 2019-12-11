@@ -1,9 +1,8 @@
-package com.iot.tsa.model;
+package com.iot.tsa.util.db;
 
 import com.iot.tsa.enums.TimeUnit;
 import org.influxdb.dto.BoundParameterQuery;
 import org.influxdb.dto.Query;
-import org.influxdb.querybuilder.Appendable;
 import org.influxdb.querybuilder.SelectQueryImpl;
 import org.influxdb.querybuilder.SelectionQueryImpl;
 import org.influxdb.querybuilder.WhereQueryImpl;
@@ -13,6 +12,8 @@ import org.springframework.util.StringUtils;
 import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.*;
 
 public class QueryCriteria {
+
+    private final static String TIME = "time";
 
     private final String table;
     private final String database;
@@ -55,16 +56,16 @@ public class QueryCriteria {
 
         if (!StringUtils.isEmpty(this.from)) {
             if (Now.isRelativeTime(this.from)) {
-                query = query.and(gte("time", new Now(this.from)));
+                query = query.and(gte(TIME, new Now(this.from)));
             }else {
-                query = query.and(gte("time", this.from));
+                query = query.and(gte(TIME, this.from));
             }
         }
         if (!StringUtils.isEmpty(this.to)) {
             if (Now.isRelativeTime(this.to)) {
-                query = query.and(lte("time", new Now(this.to)));
+                query = query.and(lte(TIME, new Now(this.to)));
             }else {
-                query = query.and(lte("time", this.to));
+                query = query.and(lte(TIME, this.to));
             }
         }
 

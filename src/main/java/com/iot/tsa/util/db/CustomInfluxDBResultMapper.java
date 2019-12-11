@@ -1,4 +1,4 @@
-package com.iot.tsa.util;
+package com.iot.tsa.util.db;
 
 import org.influxdb.InfluxDBMapperException;
 import org.influxdb.annotation.Column;

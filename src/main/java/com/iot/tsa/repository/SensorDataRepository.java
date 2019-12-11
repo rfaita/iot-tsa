@@ -1,8 +1,9 @@
 package com.iot.tsa.repository;
 
 import com.iot.tsa.model.SensorData;
-import com.iot.tsa.model.QueryCriteria;
-import com.iot.tsa.util.CustomInfluxDBResultMapper;
+import com.iot.tsa.util.db.QueryCriteria;
+import com.iot.tsa.util.db.CustomInfluxDBResultMapper;
+import org.influxdb.annotation.Measurement;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
@@ -16,13 +17,11 @@ public class SensorDataRepository {
 
     private final InfluxDBTemplate<Point> influxDBTemplate;
 
-
     public SensorDataRepository(InfluxDBTemplate<Point> influxDBTemplate) {
         this.influxDBTemplate = influxDBTemplate;
     }
 
-
-    public List<SensorData> query(Query query) {
+    private List<SensorData> query(Query query) {
 
         QueryResult queryResult = influxDBTemplate.query(query);
 
@@ -41,7 +40,7 @@ public class SensorDataRepository {
 
         QueryCriteria newCriteria = new QueryCriteria.Builder()
                 .database(influxDBTemplate.getDatabase())
-                .table("sensorData")
+                .table(SensorData.class.getAnnotation(Measurement.class).name())
                 .id(criteria.getId())
                 .tenantId(criteria.getTenantId())
                 .selectCriteria(criteria.getSelectCriteria())

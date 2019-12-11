@@ -1,28 +1,28 @@
 package com.iot.tsa.controller;
 
 import com.iot.tsa.enums.TimeUnit;
-import com.iot.tsa.model.QueryCriteria;
+import com.iot.tsa.util.db.Now;
+import com.iot.tsa.util.db.QueryCriteria;
 import com.iot.tsa.model.SensorData;
 import com.iot.tsa.service.SensorDataService;
-import com.iot.tsa.util.TimeFormatter;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.ControllerLinkBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import static com.iot.tsa.util.TimeFormatter.toZulu;
+import static com.iot.tsa.util.db.Now.RELATIVE_TIME;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RestController
 @RequestMapping("/sensorData")
 public class SensorDataController {
 
-    private final static String[] AGGREGATE_SELECT_CRITERIA = new String[]{"median(*)", "mean(*)", "max(*)", "min(*)"};
+    private final static String[] DEFAULT_AGGREGATE_SELECT_CRITERIA
+            = new String[]{"median(*)", "mean(*)", "max(*)", "min(*)"};
 
     private final SensorDataService service;
 
@@ -59,7 +59,20 @@ public class SensorDataController {
                                     intervalValue, intervalUnit)));
         }
 
-        CollectionModel<SensorData> resource = new CollectionModel<>(ret);
+        return createResource(tenantId, id, from, to, selectCriteria, intervalValue, intervalUnit, ret);
+
+    }
+
+
+    private final CollectionModel<SensorData> createResource(String tenantId,
+                                                             String id,
+                                                             String from,
+                                                             String to,
+                                                             String[] selectCriteria,
+                                                             Long intervalValue,
+                                                             TimeUnit intervalUnit,
+                                                             List<SensorData> data) {
+        CollectionModel<SensorData> resource = new CollectionModel<>(data);
 
         resource.add(linkTo(methodOn(SensorDataController.class)
                 .findAllByIdAndTenantId(tenantId, id, from, to, selectCriteria, intervalValue, intervalUnit))
@@ -67,20 +80,19 @@ public class SensorDataController {
                 .expand()
                 .withType("GET"));
 
-        resource.add(addShortcut("lastMinute", tenantId, id, "now()-1m",
+        resource.add(addShortcut("lastMinute", tenantId, id, RELATIVE_TIME.concat("-1m"),
                 null, null));
-        resource.add(addShortcut("lastMinutesGroupBy", tenantId, id, "now()-5m",
-                AGGREGATE_SELECT_CRITERIA, TimeUnit.S));
-        resource.add(addShortcut("lastHourGroupBy", tenantId, id, "now()-1h",
-                AGGREGATE_SELECT_CRITERIA, TimeUnit.M));
-        resource.add(addShortcut("lastDayGroupBy", tenantId, id, "now()-1d",
-                AGGREGATE_SELECT_CRITERIA, TimeUnit.H));
-        resource.add(addShortcut("lastMonthGroupBy", tenantId, id, "now()-30d",
-                AGGREGATE_SELECT_CRITERIA, TimeUnit.D));
+        resource.add(addShortcut("lastMinutesGroupBy", tenantId, id, RELATIVE_TIME.concat("-5m"),
+                DEFAULT_AGGREGATE_SELECT_CRITERIA, TimeUnit.S));
+        resource.add(addShortcut("lastHourGroupBy", tenantId, id, RELATIVE_TIME.concat("-1h"),
+                DEFAULT_AGGREGATE_SELECT_CRITERIA, TimeUnit.M));
+        resource.add(addShortcut("lastDayGroupBy", tenantId, id, RELATIVE_TIME.concat("-1d"),
+                DEFAULT_AGGREGATE_SELECT_CRITERIA, TimeUnit.H));
+        resource.add(addShortcut("lastMonthGroupBy", tenantId, id, RELATIVE_TIME.concat("-30d"),
+                DEFAULT_AGGREGATE_SELECT_CRITERIA, TimeUnit.D));
 
 
         return resource;
-
     }
 
     private final Link addShortcut(String linkName, String tenantId, String id, String from, String[] selectCriteria, TimeUnit timeUnit) {
@@ -93,10 +105,6 @@ public class SensorDataController {
                 .withRel(linkName)
                 .expand()
                 .withType("GET");
-    }
-
-    private final Link addDrillDown(Instant from, String tenantId, String id) {
-        return addDrillDown(from, tenantId, id, null, null, null);
     }
 
     private final Link addDrillDown(Instant from, String tenantId, String id,

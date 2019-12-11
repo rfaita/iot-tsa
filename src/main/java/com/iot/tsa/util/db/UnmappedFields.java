@@ -1,4 +1,4 @@
-package com.iot.tsa.util;
+package com.iot.tsa.util.db;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

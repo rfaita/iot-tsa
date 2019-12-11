@@ -1,6 +1,6 @@
 package com.iot.tsa.service;
 
-import com.iot.tsa.model.QueryCriteria;
+import com.iot.tsa.util.db.QueryCriteria;
 import com.iot.tsa.model.SensorData;
 import com.iot.tsa.repository.SensorDataRepository;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,6 @@ public class SensorDataService {
     public SensorDataService(SensorDataRepository repository) {
         this.repository = repository;
     }
-
 
     public List<SensorData> findAllByCriteria(QueryCriteria criteria) {
         return repository.findAllByCriteria(criteria);

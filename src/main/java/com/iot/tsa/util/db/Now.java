@@ -1,4 +1,4 @@
-package com.iot.tsa.model;
+package com.iot.tsa.util.db;
 
 import org.influxdb.querybuilder.Appendable;
 import org.springframework.util.StringUtils;
@@ -7,7 +7,7 @@ public class Now implements Appendable {
 
     private final String operation;
 
-    private final static String RELATIVE_TIME = "now()";
+    public final static String RELATIVE_TIME = "now()";
 
     public Now(String operation) {
         this.operation = operation;
