@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 @Measurement(name = "sensorData")
-public class SensorData extends RepresentationModel {
+public class SensorData  {
 
     @Column(name = "time")
     private Instant time;
