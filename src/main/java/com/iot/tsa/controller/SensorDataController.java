@@ -1,6 +1,7 @@
 package com.iot.tsa.controller;
 
 import com.iot.tsa.enums.TimeUnit;
+import com.iot.tsa.model.LastSensorsDataResource;
 import com.iot.tsa.model.SensorData;
 import com.iot.tsa.model.SensorDataResource;
 import com.iot.tsa.model.SensorsDataResource;
@@ -57,6 +58,26 @@ public class SensorDataController {
                         .collect(Collectors.toList());
 
         return new SensorsDataResource(ret, tenantId, id, from, to, selectCriteria, intervalValue, intervalUnit);
+
+    }
+
+    @GetMapping("/lastvalues")
+    public LastSensorsDataResource findAllLastValueByTenantId(@RequestHeader(X_TENANT_ID) String tenantId) {
+
+        return new LastSensorsDataResource(service.findAllLastValueByTenantId(tenantId), tenantId);
+
+
+    }
+
+    @GetMapping("/lastvalue/{id}")
+    public LastSensorsDataResource findAllLastValueByTenantIdAndId(
+            @RequestHeader(X_TENANT_ID) String tenantId,
+            @PathVariable String id) {
+
+        return new LastSensorsDataResource(
+                service.findAllLastValueByTenantIdAndId(tenantId, id),
+                tenantId, id);
+
 
     }
 

@@ -48,6 +48,7 @@ public class SensorDataRepository {
                 .to(criteria.getTo())
                 .from(criteria.getFrom())
                 .intervalUnit(criteria.getIntervalUnit())
+                .groupByCriteria(criteria.getGroupByCriteria())
                 .build();
         return query(newCriteria.toQuery());
     }

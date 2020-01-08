@@ -24,6 +24,7 @@ public class QueryCriteria {
     private final String[] selectCriteria;
     private final Long intervalValue;
     private final TimeUnit intervalUnit;
+    private final String[] groupByCriteria;
 
     private QueryCriteria(Builder builder) {
         this.table = builder.table;
@@ -35,12 +36,13 @@ public class QueryCriteria {
         this.selectCriteria = builder.selectCriteria;
         this.intervalValue = builder.intervalValue;
         this.intervalUnit = builder.intervalUnit;
+        this.groupByCriteria = builder.groupByCriteria;
     }
 
     public Query toQuery() {
         SelectionQueryImpl selection = select();
 
-        if (this.selectCriteria != null) {
+        if (!ObjectUtils.isEmpty(this.selectCriteria)) {
             for (String criteria : this.selectCriteria) {
                 selection.raw(criteria);
             }
@@ -49,28 +51,33 @@ public class QueryCriteria {
         WhereQueryImpl query = selection
                 .from(this.database, this.table)
                 .where()
-                .and(eq("id", id))
                 .and(eq("tenantId", tenantId));
 
 
+        if (!StringUtils.isEmpty(this.id)) {
+            query.and(eq("id", id));
+        }
 
         if (!StringUtils.isEmpty(this.from)) {
             if (Now.isRelativeTime(this.from)) {
                 query = query.and(gte(TIME, new Now(this.from)));
-            }else {
+            } else {
                 query = query.and(gte(TIME, this.from));
             }
         }
         if (!StringUtils.isEmpty(this.to)) {
             if (Now.isRelativeTime(this.to)) {
                 query = query.and(lte(TIME, new Now(this.to)));
-            }else {
+            } else {
                 query = query.and(lte(TIME, this.to));
             }
         }
 
         SelectQueryImpl selectQuery = null;
-        if (!ObjectUtils.isEmpty(this.intervalValue) && !ObjectUtils.isEmpty(this.intervalUnit)) {
+
+        if (!ObjectUtils.isEmpty(this.groupByCriteria)) {
+            selectQuery = query.groupBy(this.groupByCriteria);
+        } else if (!ObjectUtils.isEmpty(this.intervalValue) && !ObjectUtils.isEmpty(this.intervalUnit)) {
             selectQuery = query.groupBy(time(this.intervalValue, this.intervalUnit.getUnit()));
         }
 
@@ -109,6 +116,10 @@ public class QueryCriteria {
         return intervalUnit;
     }
 
+    public String[] getGroupByCriteria() {
+        return groupByCriteria;
+    }
+
     public static class Builder {
         private String table;
         private String database;
@@ -119,6 +130,7 @@ public class QueryCriteria {
         private String[] selectCriteria;
         private Long intervalValue;
         private TimeUnit intervalUnit;
+        private String[] groupByCriteria;
 
         public Builder table(String table) {
             this.table = table;
@@ -162,6 +174,11 @@ public class QueryCriteria {
 
         public Builder intervalUnit(TimeUnit intervalUnit) {
             this.intervalUnit = intervalUnit;
+            return this;
+        }
+
+        public Builder groupByCriteria(String[] groupByCriteria) {
+            this.groupByCriteria = groupByCriteria;
             return this;
         }
 
